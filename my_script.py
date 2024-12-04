@@ -1,12 +1,44 @@
+# secure_script.py
 import os
+import sys
+from typing import Optional
 
-# Access the GitHub variable
-github_variable = os.environ.get("MY_GITHUB_VARIABLE")
 
-print(f"The value of MY_GITHUB_VARIABLES is: {github_variable}")
+def get_required_env_var(var_name: str) -> str:
+    """Safely get an environment variable."""
+    value = os.environ.get(var_name)
+    if value is None:
+        raise ValueError(f"Required environment variable '{var_name}' is not set")
+    return value
 
-# Use the variable in your script
-if github_variable:
-    print(f"Received message: {github_variable}")
-else:
-    print("No message received")
+
+def get_optional_env_var(var_name: str, default: str = None) -> Optional[str]:
+    """Get an optional environment variable with a default value."""
+    return os.environ.get(var_name, default)
+
+
+def main():
+    try:
+        # Get required variables
+        api_key = get_required_env_var("API_KEY")
+        database_url = get_required_env_var("DATABASE_URL")
+
+        # Get optional variables
+        debug_mode = get_optional_env_var("DEBUG_MODE", "False").lower() == "true"
+
+        # Your secure script logic here
+        if debug_mode:
+            print("Debug mode enabled")
+            print(f"Using database: {database_url}")
+            # Never print sensitive information like API keys
+
+    except ValueError as e:
+        print(f"Configuration error: {str(e)}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
