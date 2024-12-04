@@ -1,0 +1,17 @@
+name: Run Python Script
+
+on: [push]
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Run script
+      env:
+        MY_GITHUB_VARIABLE: ${{ vars.MY_VARIABLE }}
+      run: python my_script.py
